@@ -1,0 +1,4 @@
+# Optional local files
+.vscode/
+.DS_Store
+Thumbs.db

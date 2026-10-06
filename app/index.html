@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPulse Weather App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <section id="authView" class="auth-page">
+    <div class="auth-card">
+      <div class="brand">☁️ SkyPulse</div>
+      <p class="subtitle">Simple weather dashboard for your daily forecast.</p>
+
+      <div class="tabs">
+        <button id="loginTab" class="tab active">Login</button>
+        <button id="signupTab" class="tab">Sign Up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="loginPassword" type="password" required placeholder="••••••••"></label>
+        <button class="primary-btn" type="submit">Login</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <label>Full Name<input id="signupName" type="text" required placeholder="Your name"></label>
+        <label>Email<input id="signupEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="signupPassword" type="password" minlength="6" required placeholder="Minimum 6 characters"></label>
+        <button class="primary-btn" type="submit">Create Account</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand">☁️ SkyPulse</div>
+      <nav>
+        <button class="nav-btn active" data-section="dashboard">🏠 Dashboard</button>
+        <button class="nav-btn" data-section="worldMap">🌍 World Map</button>
+        <button class="nav-btn" data-section="favorites">⭐ Favorites</button>
+        <button class="nav-btn" data-section="airQuality">🌫️ Air Quality</button>
+        <button class="nav-btn" data-section="insights">🧠 Weather Insights</button>
+        <button class="nav-btn" data-section="analytics">📊 Analytics</button>
+        <button class="nav-btn" data-section="profile">👤 Profile</button>
+        <button class="nav-btn" data-section="settings">⚙️ Settings</button>
+        <button id="adminNav" class="nav-btn hidden" data-section="admin">🛠️ Admin</button>
+      </nav>
+      <button id="logoutBtn" class="logout-btn">↪ Logout</button>
+    </aside>
+
+    <main class="main-content">
+      <div class="weather-atmosphere" aria-hidden="true"></div>
+      <header class="topbar">
+        <div>
+          <h1 id="welcomeTitle">Weather Dashboard</h1>
+          <p id="todayText"></p>
+        </div>
+        <div class="user-chip"><span id="userAvatar">U</span><span id="userName">User</span></div>
+      </header>
+
+      <section id="dashboardSection" class="content-section">
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <input id="cityInput" type="text" placeholder="Search city e.g. Vijayawada" autocomplete="off">
+            <button id="voiceSearchBtn" class="voice-btn" type="button" title="Search by voice" aria-label="Search by voice">🎙️</button>
+          </div>
+          <button id="searchBtn" class="primary-btn">Search Weather</button>
+          <button id="locationBtn" class="secondary-btn">📍 My Location</button>
+        </div>
+        <p id="searchMessage" class="message"></p>
+
+        <div id="currentCard" class="weather-hero">
+          <div>
+            <p class="eyebrow">CURRENT WEATHER</p>
+            <h2 id="cityName">Search for a city</h2>
+            <div class="big-temp"><span id="temperature">--</span>°C</div>
+            <p id="condition">Enter a city to get live weather.</p>
+          </div>
+          <div class="weather-icon" id="weatherIcon">🌤️</div>
+          <button id="favoriteBtn" class="favorite-btn" title="Add to favorites">☆</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><span>💧 Humidity</span><b id="humidity">--%</b></div>
+          <div class="stat-card"><span>💨 Wind Speed</span><b id="wind">-- km/h</b></div>
+          <div class="stat-card"><span>🌡️ Feels Like</span><b id="feels">--°C</b></div>
+          <div class="stat-card"><span>☀️ UV Index</span><b id="uv">--</b></div>
+        </div>
+
+        <div class="section-heading">
+          <h2>7-Day Hourly Forecast</h2>
+          <span>168 hourly updates</span>
+        </div>
+        <div id="hourlyForecast" class="hourly-forecast"></div>
+      </section>
+
+      <section id="worldMapSection" class="content-section hidden">
+        <div class="section-heading world-map-heading">
+          <div>
+            <h2>World Temperature Map</h2>
+            <p>Live temperature for countries and territories worldwide.</p>
+          </div>
+          <button id="refreshWorldMap" class="secondary-btn">↻ Refresh</button>
+        </div>
+
+        <div class="world-map-card">
+          <div class="world-map-toolbar">
+            <div>
+              <span class="map-status-dot"></span>
+              <span id="worldMapStatus">Loading global temperatures…</span>
+            </div>
+            <span id="worldMapUpdated">--</span>
+          </div>
+          <div class="world-map-stage" id="worldMapStage">
+            <img src="world-map-bg.svg" alt="World map" class="world-map-image">
+            <div id="countryHeatLayer" class="country-heat-layer"></div>
+            <div class="map-empty hidden" id="worldMapEmpty">Unable to load global temperatures. Please try again.</div>
+          </div>
+          <div class="temperature-legend">
+            <span>−30°C</span><i class="legend-gradient"></i><span>0°C</span><span>20°C</span><span>40°C+</span>
+          </div>
+        </div>
+
+        <div class="world-country-panel">
+          <div class="section-heading compact-heading"><h2>All Countries</h2><span id="countryCount">0 locations</span></div>
+          <div id="countryTemperatureGrid" class="country-temperature-grid"></div>
+        </div>
+      </section>
+
+      <section id="airQualitySection" class="content-section hidden">
+        <div class="section-heading"><div><h2>Air Quality</h2><p class="section-subtitle">Live atmospheric conditions for the selected location.</p></div><button id="refreshAirQuality" class="secondary-btn">↻ Refresh</button></div>
+        <div class="aq-hero-card">
+          <div><span class="eyebrow">CURRENT AQI</span><div class="aq-number" id="aqiNumber">--</div><h3 id="aqiLabel">Search a location first</h3><p id="aqiLocation">--</p></div>
+          <div class="aq-gauge"><div class="aq-gauge-ring"><span id="aqiGaugeValue">--</span></div><div class="aq-gauge-label">US AQI</div></div>
+        </div>
+        <div class="aq-grid">
+          <div class="stat-card"><span>PM2.5</span><b id="pm25">-- µg/m³</b></div><div class="stat-card"><span>PM10</span><b id="pm10">-- µg/m³</b></div><div class="stat-card"><span>Ozone</span><b id="ozone">-- µg/m³</b></div><div class="stat-card"><span>NO₂</span><b id="no2">-- µg/m³</b></div>
+        </div>
+        <div class="info-card"><h3>Air Quality Guide</h3><div class="aq-scale"><span>0–50 Good</span><span>51–100 Moderate</span><span>101–150 Unhealthy</span><span>151+ Poor</span></div><p id="aqAdvice">Choose a city from Dashboard to load air-quality information.</p></div>
+      </section>
+
+      <section id="insightsSection" class="content-section hidden">
+        <div class="section-heading"><div><h2>Weather Insights</h2><p class="section-subtitle">Simple recommendations generated from live forecast conditions.</p></div><button id="refreshInsights" class="secondary-btn">↻ Update</button></div>
+        <div id="insightHero" class="insight-hero"><div class="insight-orb">✦</div><div><span class="eyebrow">SKYPULSE INTELLIGENCE</span><h2 id="insightHeadline">Search a location to get insights</h2><p id="insightSummary">Your personalized weather summary will appear here.</p></div></div>
+        <div id="insightCards" class="insight-grid"></div>
+      </section>
+
+      <section id="analyticsSection" class="content-section hidden">
+        <div class="section-heading"><div><h2>Weather Analytics</h2><p class="section-subtitle">Seven-day statistics calculated from the hourly forecast.</p></div></div>
+        <div class="analytics-kpis">
+          <div class="stat-card"><span>7-Day Average</span><b id="avgTemp">--°C</b></div><div class="stat-card"><span>Highest Temperature</span><b id="maxTemp">--°C</b></div><div class="stat-card"><span>Lowest Temperature</span><b id="minTemp">--°C</b></div><div class="stat-card"><span>Rainy Hours</span><b id="rainyHours">--</b></div>
+        </div>
+        <div class="chart-card"><div class="chart-head"><h3>Temperature Trend</h3><span id="analyticsLocation">--</span></div><div class="bar-chart" id="temperatureChart"></div></div>
+      </section>
+
+      <section id="settingsSection" class="content-section hidden">
+        <div class="section-heading"><div><h2>Settings</h2><p class="section-subtitle">Personalize your SkyPulse experience.</p></div></div>
+        <div class="settings-card">
+          <div class="setting-row"><div><b>Theme</b><span>Switch between the clean light interface and a dark weather view.</span></div><select id="themeSelect"><option value="light">Light</option><option value="dark">Dark</option></select></div>
+          <div class="setting-row"><div><b>Temperature Unit</b><span>Choose how temperatures are displayed.</span></div><select id="unitSelect"><option value="C">Celsius (°C)</option><option value="F">Fahrenheit (°F)</option></select></div>
+          <div class="setting-row"><div><b>Auto Refresh</b><span>Refresh weather data when you return to the dashboard.</span></div><label class="switch"><input id="autoRefreshToggle" type="checkbox" checked><span></span></label></div>
+          <button id="saveSettings" class="primary-btn settings-save">Save Preferences</button>
+        </div>
+      </section>
+
+      <section id="favoritesSection" class="content-section hidden">
+        <div class="section-heading"><h2>Favorite Cities</h2><span>Quick access</span></div>
+        <div id="favoritesGrid" class="favorites-grid"></div>
+      </section>
+
+      <section id="profileSection" class="content-section hidden">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <h2 id="profileName">User</h2>
+          <p id="profileEmail">email</p>
+          <div class="profile-details">
+            <div><span>Role</span><b id="profileRole">User</b></div>
+            <div><span>Favorite Cities</span><b id="profileFavCount">0</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="adminSection" class="content-section hidden">
+        <div class="section-heading"><h2>Admin Module</h2><span>System management</span></div>
+        <div class="admin-grid">
+          <div class="admin-stat"><span>👥 Registered Users</span><b id="userCount">0</b></div>
+          <div class="admin-stat"><span>⭐ Total Favorites</span><b id="favoriteCount">0</b></div>
+          <div class="admin-stat"><span>🌤️ Weather Service</span><b>Online</b></div>
+        </div>
+        <div class="table-card">
+          <h3>Registered Users</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Favorites</th><th>Action</th></tr></thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
